@@ -41,3 +41,10 @@ Trợ lý hỗ trợ điều khiển **khóa cửa thông minh** và trò chuy�
 pip install -r requirement.txt
 sudo apt install pigpio
 ```
+
+### 2. Tải file mô hình vosk
+Để chạy mô hình vosk cần tải mô hình ngôn ngữ trên [vosk model](https://alphacephei.com/vosk/models 'Link title')
+- Chúng tôi sử dụng english model:
+  + [vosk-model-small-en-us-0.15](https://alphacephei.com/vosk/models/vosk-model-small-en-us-0.15.zip 'Link title') 
+  + Ngoài ra bạn có thể sử dụng các mô hình tiếng anh khác tùy vào nhu cầu trên tiêu chí phù hợp với cấu hình máy tính của bạn
+- Sau khi tải và unzip thì chuyển cả folder vào folder models trong folder dự án
