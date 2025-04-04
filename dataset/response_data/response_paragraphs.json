@@ -1,0 +1,12 @@
+{
+    "response_hello":{
+    "text":["Hey there! How's your day going?",
+            "Hi! Great to see you! How can I help?",
+            "Hello, my friend! What’s up?",
+            "Hey! Nice to have you here!",
+            "Welcome! Hope you're having an amazing day!",
+            "Hi there! Need anything? I'm happy to help!",
+            "Hey hey! What can I do for you today?",
+            "Hello! Ready when you are!"]
+    }
+}
