@@ -19,7 +19,9 @@ def map_fuzz_entity(entities, mapping,threshold=80):
             entity[0] = best_match[0]
         if entity[0] in mapping:
             entity[0] = mapping.get(entity[0], entity[0])
-    return [(text, label) for text,label in entities]
+        else:
+            entity[0] = None
+    return [(text, label) for text,label in entities if text is not None]
 
 # Dự đoán
 def predict_intent():

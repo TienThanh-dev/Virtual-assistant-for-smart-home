@@ -3,6 +3,8 @@ from datetime import datetime
 import json
 import random
 from ..config import RESPONSE_PARAGRAPHS
+with open(RESPONSE_PARAGRAPHS, "r", encoding="utf-8") as file:
+    response_para = json.load(file)
 def response_assistant():
     for intent, entities in predict_intent():
         if intent == "turn_off_device":
@@ -22,10 +24,7 @@ def response_assistant():
                     speech_text += f" {entities[2][0]}"
                 yield speech_text
         elif intent == "hello":
-            with open(RESPONSE_PARAGRAPHS, "r", encoding="utf-8") as file:
-                data = json.load(file)
-            paragraphs = random.choice(data["response_hello"]["text"])
-            data=None
+            paragraphs = random.choice(response_para["response_hello"]["text"])
             yield paragraphs
         elif intent == "what_time":
             print("What time")
