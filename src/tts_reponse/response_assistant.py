@@ -1,4 +1,5 @@
 from ..stt_nlu.hybrid_nlu import predict_intent
+from ..firebase_API.load_n_up_data import pull_data
 from datetime import datetime
 import json
 import random
@@ -35,7 +36,9 @@ def response_assistant():
             speech_text = f"Now it is {formatted_time} on {formatted_weekday}, {formatted_date}"
             yield speech_text
         elif intent == "house_status":
-            print("House status")
+            data=pull_data("/ESP32CAM")
+            speech_text = f"Current gas level is {data['gas']} units, the temperature is {data['temp']} degrees, light intensity is {data['light']} lux."
+            yield speech_text
         elif intent == "stop_speak":
             yield "Stop"
         elif intent == "nothing":
