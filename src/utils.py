@@ -1,4 +1,5 @@
 import queue
+import subprocess
 import sounddevice as sd
 import threading
 from .config import SAMPLERATE
@@ -19,13 +20,22 @@ def audio_callback(indata,frames, time, status):
         while not q.empty():
             q.get()
     
-
 def record_audio(samplerate=SAMPLERATE, blocksize=8000):
     """Hàm mở micro và lấy dữ liệu âm thanh"""
     with sd.RawInputStream(samplerate=samplerate, blocksize=blocksize, dtype="int16",
                            channels=1, callback=audio_callback):
-        print("Nói vào mic...")
         while True:
             if audio_event.is_set():
-                yield q.get()  # Chỉ lấy dữ liệu khi đang ghi âm
-            
+                yield q.get()
+                
+def check_internet():
+    try:
+        result = subprocess.run(
+            ["ping", "-n", "1", "google.com"],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            timeout=2
+        )
+        return result.returncode == 0
+    except subprocess.TimeoutExpired:
+        return False
