@@ -28,7 +28,6 @@ def response_assistant():
             paragraphs = random.choice(response_para["response_hello"]["text"])
             yield paragraphs
         elif intent == "what_time":
-            print("What time")
             now = datetime.now()  # Lấy thời gian hệ thống
             formatted_time = now.strftime("%H:%M")  # Lấy giờ, phút, giây
             formatted_date = now.strftime("%Y-%m-%d")  # Lấy ngày, tháng, năm
@@ -37,8 +36,11 @@ def response_assistant():
             yield speech_text
         elif intent == "house_status":
             data=pull_data("/ESP32CAM")
-            speech_text = f"Current gas level is {data['gas']} units, the temperature is {data['temp']} degrees, light intensity is {data['light']} lux."
-            yield speech_text
+            if data:
+                speech_text = f"Current gas level is {data['gas']} units, the temperature is {data['temp']} degrees, light intensity is {data['light']} lux."
+                yield speech_text
+            else:
+                yield "Not connected database"
         elif intent == "stop_speak":
             yield "Stop"
         elif intent == "nothing":

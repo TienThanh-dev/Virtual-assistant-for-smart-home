@@ -1,6 +1,6 @@
 from .config import MODEL_PATH_VN, MODEL_PATH_EN, MODEL_PATH_SPA, MODEL_PATH_TFIDF_SVM, SAMPLERATE, BASE_DIR,SOUND_NOTIFICATION,RESPONSE_PARAGRAPHS
 from .utils import record_audio,audio_event
-from .stt_nlu.speech_recognition import recognize_speech
+from .stt_nlu.speech import recognize_speech_loop
 from .stt_nlu.hybrid_nlu import predict_intent
 from .tts_reponse.response_assistant import response_assistant
 from .tts_reponse.speak import speak

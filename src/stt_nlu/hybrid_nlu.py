@@ -1,4 +1,4 @@
-from .speech_recognition import recognize_speech
+from .speech import recognize_speech_loop
 from ..config import MODEL_PATH_SPA, MODEL_PATH_TFIDF_SVM
 import json
 import spacy
@@ -25,7 +25,7 @@ def map_fuzz_entity(entities, mapping,threshold=80):
 
 # Dự đoán
 def predict_intent():
-    for text in recognize_speech():
+    for text in recognize_speech_loop():
         # text="activate lights in the living room at twenty three zero zero weekends only"
         doc = nlp(text)
         # Trả về kết quả

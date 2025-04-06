@@ -1,4 +1,4 @@
-from src import response_assistant,speak,audio_event
+from src import response_assistant,speak
 import pygame
 
 if __name__ == '__main__':
@@ -10,7 +10,5 @@ if __name__ == '__main__':
     pygame.mixer.quit()
     for text in response_assistant():
         print(f"Received: {text}")
-        audio_event.clear()
         speak(text)
-        audio_event.set()
         print("Recording again...")

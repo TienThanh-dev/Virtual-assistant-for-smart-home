@@ -1,17 +1,10 @@
 import pyttsx3
-import os
 from gtts import gTTS
 import pygame
-import time
+from ..utils import check_internet,audio_event
 
 engine = pyttsx3.init()
 engine.setProperty('rate', 150)
-
-
-
-def check_internet():
-    response = os.system("ping -n 1 google.com")
-    return response == 0
 
 def speak_pyttsx3(text):
     engine.say(text)
@@ -30,12 +23,11 @@ def speak_google_tts(text):
     # Đảm bảo rằng không có gì còn hoạt động
     pygame.mixer.music.stop()
     pygame.mixer.quit()
-    # if os.path.exists("./sound_notification/voice.mp3"):
-    #     os.remove("./sound_notification/voice.mp3")
 
 def speak(text):
+    audio_event.clear()
     if check_internet():
         speak_google_tts(text)
     else:
         speak_pyttsx3(text)
-
+    audio_event.set()
