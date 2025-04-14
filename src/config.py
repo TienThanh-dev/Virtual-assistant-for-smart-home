@@ -10,10 +10,3 @@ MODEL_PATH_SPA = os.path.join(BASE_DIR, "models", "spaCy_output", "model-best")
 RESPONSE_PARAGRAPHS = os.path.join(BASE_DIR,"dataset","response_data", "response_paragraphs.json")
 SOUND_NOTIFICATION=os.path.join(BASE_DIR,"sound_notification")
 SAMPLERATE = 16000
-#PIN GPIO FOR DEVICE CONTROL
-PIN_DEVICE_1 = 17
-PIN_DEVICE_2 = 27
-PIN_DEVICE_3 = 22
-PIN_DEVICE_4 = 23
-PIN_DEVICE_5 = 24
-PIN_DEVICE_6 = 25

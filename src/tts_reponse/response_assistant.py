@@ -1,5 +1,6 @@
 from ..stt_nlu.hybrid_nlu import predict_intent
 from ..firebase_API.load_n_up_data import pull_data
+from ..device_controller.gpio_controller import turn_on_device, turn_off_device
 from datetime import datetime
 import json
 import random
@@ -15,6 +16,7 @@ def response_assistant():
                     speech_text += f" at {entities[1][0]}"
                 if len(entities) > 2 and entities[2][0]:  
                     speech_text += f" {entities[2][0]}"
+                turn_off_device(entities[0][0])
                 yield speech_text
         elif intent == "turn_on_device":
             if entities and entities[0][0]:
@@ -23,6 +25,7 @@ def response_assistant():
                     speech_text += f" at {entities[1][0]}"
                 if len(entities) > 2 and entities[2][0]:  
                     speech_text += f" {entities[2][0]}"
+                turn_on_device(entities[0][0])
                 yield speech_text
         elif intent == "hello":
             paragraphs = random.choice(response_para["response_hello"]["text"])
