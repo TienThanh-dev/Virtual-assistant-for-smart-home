@@ -1,3 +1,4 @@
-dataset/
+/dataset/nlu_datasets/
 /models/vosk-model-en/
 /models/vosk-model-vn/
+/src/firebase_API/esp32cam-dcfbf-firebase-adminsdk-fbsvc-2faf44798d.json

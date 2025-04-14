@@ -1,19 +1,20 @@
 import pigpio
-
+import json
 pi = pigpio.pi()
 if not pi.connected:
     print("Không thể kết nối với pigpio daemon!")
-
+with open("./src/device_controller/devices_mapping.json", "r", encoding="utf-8") as file:
+    mapping = json.load(file)
 def turn_on_device(device):
     try:
-        pi.set_mode(device, pigpio.OUTPUT)
-        pi.write(device,1)
+        pi.set_mode(mapping[device], pigpio.OUTPUT)
+        pi.write(mapping[device],1)
     except Exception as e:
         print("Lỗi {e}")
 def turn_off_device(device):
     try:
-        pi.set_mode(device, pigpio.OUTPUT)
-        pi.write(device,0)
+        pi.set_mode(mapping[device], pigpio.OUTPUT)
+        pi.write(mapping[device],0)
     except Exception as e:
         print("Lỗi {e}")
 def set_pwm(device, duty_cycle,frequency):
@@ -73,3 +74,4 @@ def uart_close(handle):
     if handle is not None:
         pi.serial_close(handle)
         print("UART đã đóng.")
+        

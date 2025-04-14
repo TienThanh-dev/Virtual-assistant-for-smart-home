@@ -1,8 +1,12 @@
 from ..stt_nlu.hybrid_nlu import predict_intent
+from ..firebase_API.load_n_up_data import pull_data
+from ..device_controller.gpio_controller import turn_on_device, turn_off_device
 from datetime import datetime
 import json
 import random
 from ..config import RESPONSE_PARAGRAPHS
+with open(RESPONSE_PARAGRAPHS, "r", encoding="utf-8") as file:
+    response_para = json.load(file)
 def response_assistant():
     for intent, entities in predict_intent():
         if intent == "turn_off_device":
@@ -12,6 +16,7 @@ def response_assistant():
                     speech_text += f" at {entities[1][0]}"
                 if len(entities) > 2 and entities[2][0]:  
                     speech_text += f" {entities[2][0]}"
+                turn_off_device(entities[0][0])
                 yield speech_text
         elif intent == "turn_on_device":
             if entities and entities[0][0]:
@@ -20,15 +25,12 @@ def response_assistant():
                     speech_text += f" at {entities[1][0]}"
                 if len(entities) > 2 and entities[2][0]:  
                     speech_text += f" {entities[2][0]}"
+                turn_on_device(entities[0][0])
                 yield speech_text
         elif intent == "hello":
-            with open(RESPONSE_PARAGRAPHS, "r", encoding="utf-8") as file:
-                data = json.load(file)
-            paragraphs = random.choice(data["response_hello"]["text"])
-            data=None
+            paragraphs = random.choice(response_para["response_hello"]["text"])
             yield paragraphs
         elif intent == "what_time":
-            print("What time")
             now = datetime.now()  # Lấy thời gian hệ thống
             formatted_time = now.strftime("%H:%M")  # Lấy giờ, phút, giây
             formatted_date = now.strftime("%Y-%m-%d")  # Lấy ngày, tháng, năm
@@ -36,7 +38,12 @@ def response_assistant():
             speech_text = f"Now it is {formatted_time} on {formatted_weekday}, {formatted_date}"
             yield speech_text
         elif intent == "house_status":
-            print("House status")
+            data=pull_data("/ESP32CAM")
+            if data:
+                speech_text = f"Current gas level is {data['gas']} units, the temperature is {data['temp']} degrees, light intensity is {data['light']} lux."
+                yield speech_text
+            else:
+                yield "Not connected database"
         elif intent == "stop_speak":
             yield "Stop"
         elif intent == "nothing":
