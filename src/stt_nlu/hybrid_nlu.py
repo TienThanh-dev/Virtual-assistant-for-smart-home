@@ -7,7 +7,7 @@ from rapidfuzz import process
 # Load model đã train
 nlp = spacy.load(MODEL_PATH_SPA)
 svm_model = joblib.load(MODEL_PATH_TFIDF_SVM)
-with open("./src/stt_nlu/synonyms_mapping.json", "r", encoding="utf-8") as file:
+with open("./DATN/src/stt_nlu/synonyms_mapping.json", "r", encoding="utf-8") as file:
     mapping = json.load(file)
 # Mapping
 def map_fuzz_entity(entities, mapping,threshold=80):

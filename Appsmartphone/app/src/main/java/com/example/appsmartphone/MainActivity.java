@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.View;
+import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -50,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
     Button statusLamps;
     LocationManager locationManager;
     ConstraintLayout backBtn1,modeCamera;
+
     String textAdvice="";
 
     @Override
@@ -80,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
         }else {
             getCurrentLocation();
         }
-        readWeatherFromFirebase();
+        readDataFromFirebase();
         setCurrentTime();
         backBtn1.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -174,7 +176,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-    private void readWeatherFromFirebase() {
+    private void readDataFromFirebase() {
         DatabaseReference database = FirebaseDatabase.getInstance().getReference("ESP32CAM");
 
         database.addValueEventListener(new ValueEventListener() {
@@ -185,7 +187,8 @@ public class MainActivity extends AppCompatActivity {
                     double gas = data.getGas();
                     double temp = data.getTemp();
                     double humidity = data.getHumidity();
-                    double light =data.getLight();
+                    double toxicGas =data.getToxicGas();
+                    statusAir.setText(toxicGas+"ppm");
                     statusGas.setText(gas+"ppm");
                     statusTempRoom.setText(temp+"°");
                     statusHumidity.setText(humidity+"%");

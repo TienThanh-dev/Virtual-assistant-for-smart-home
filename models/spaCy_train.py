@@ -1,7 +1,7 @@
 from spacy.cli.train import train
 
-config_path = "./models/config.cfg"
-output_path = "./models/spaCy_output"
+config_path = "./DATN/models/config.cfg"
+output_path = "./DATN/models/spaCy_output"
 
 train(config_path, output_path)
 

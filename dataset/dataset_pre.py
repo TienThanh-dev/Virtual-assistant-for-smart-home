@@ -5,11 +5,11 @@ from spacy.tokens import DocBin
 import psutil
 import random
 
-target_count = 100000  # Số lượng câu lệnh mong muốn
-with open(r'.\dataset\dataset_snipsNLU.json', 'r', encoding='utf-8') as f:
+target_count = 300000  # Số lượng câu lệnh mong muốn
+with open(r'.\DATN\dataset\dataset_snipsNLU.json', 'r', encoding='utf-8') as f:
     dataset = json.load(f)
 
-intent_names = ["turn_on_device", "turn_off_device","hello","what_time","house_status","stop_speak","nothing"]
+intent_names = ["turn_on_device", "turn_off_device","hello","what_time","house_status","open","close","nothing"]
 training_data = []
 while len(training_data) < target_count:
     # Chọn một intent ngẫu nhiên từ danh sách intent_names
@@ -70,13 +70,13 @@ for item in training_data:
     doc.ents = ents
     doc_bin.add(doc)
     # Lưu file để train spaCy
-output_file = f"./dataset/spaCy_train.spacy"
+output_file = f"./DATN/dataset/nlu_datasets/spaCy_train.spacy"
 doc_bin.to_disk(output_file)
 # **Lưu file JSON**
-output_file = r'C:\Users\MY PC\Desktop\DATN\dataset\training_data.json'
+output_file = r'C:\Users\MY PC\Desktop\DATN\DATN\dataset\nlu_datasets\training_data.json'
 with open(output_file, 'w', encoding='utf-8') as f:
     json.dump(training_data, f, indent=4, ensure_ascii=False)
-output_file = r'C:\Users\MY PC\Desktop\DATN\dataset\intern_training_data.json'
+output_file = r'C:\Users\MY PC\Desktop\DATN\DATN\dataset\nlu_datasets\intern_training_data.json'
 texts = [item["text"] for item in training_data]
 labels = [item["intent"] for item in training_data]
 data = {"texts": texts, "labels": labels}

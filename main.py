@@ -12,3 +12,4 @@ if __name__ == '__main__':
         print(f"Received: {text}")
         speak(text)
         print("Recording again...")
+        

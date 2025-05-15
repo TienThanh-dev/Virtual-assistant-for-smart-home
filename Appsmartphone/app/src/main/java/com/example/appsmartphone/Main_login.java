@@ -2,8 +2,10 @@ package com.example.appsmartphone;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -31,6 +33,8 @@ public class Main_login extends AppCompatActivity {
         EditText emailInput= findViewById(R.id.loginName);
         EditText passInput=findViewById(R.id.password);
         Button SignInBtn= findViewById(R.id.signInBtn);
+        TextView signUpBtn= findViewById(R.id.signUpBtn);
+        TextView forgetPassBtn= findViewById(R.id.forgetPassBtn);
 
         SignInBtn.setOnClickListener(v -> {
             String email = emailInput.getText().toString().trim();
@@ -42,6 +46,23 @@ public class Main_login extends AppCompatActivity {
                 signInUser(email, password);
             }
         });
+        signUpBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent (Main_login.this, mainRegister.class);
+                startActivity(intent);
+
+            }
+        });
+        forgetPassBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent (Main_login.this, Main_ForgotPassword.class);
+                startActivity(intent);
+
+            }
+        });
+        
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());

@@ -1,77 +1,94 @@
 import pigpio
 import json
-pi = pigpio.pi()
-if not pi.connected:
-    print("Không thể kết nối với pigpio daemon!")
-with open("./src/device_controller/devices_mapping.json", "r", encoding="utf-8") as file:
-    mapping = json.load(file)
-def turn_on_device(device):
-    try:
-        pi.set_mode(mapping[device], pigpio.OUTPUT)
-        pi.write(mapping[device],1)
-    except Exception as e:
-        print("Lỗi {e}")
-def turn_off_device(device):
-    try:
-        pi.set_mode(mapping[device], pigpio.OUTPUT)
-        pi.write(mapping[device],0)
-    except Exception as e:
-        print("Lỗi {e}")
-def set_pwm(device, duty_cycle,frequency):
-    if duty_cycle < 0:
-        duty_cycle = 0
-    elif duty_cycle > 100:
-        duty_cycle = 100
-    try:
-        pi.set_mode(device, pigpio.OUTPUT)
-        pi.set_PWM_frequency(device, frequency)
-        # Lấy khoảng PWM phù hợp (giới hạn tối đa 10_000 để tránh lỗi)
-        range_ = min(1_000_000 // frequency, 10_000)
-        pi.set_PWM_range(device, range_)
-        # Tính giá trị duty_cycle phù hợp với khoảng PWM
-        pwm_value = int((duty_cycle / 100) * range_)
-        pi.set_PWM_dutycycle(device, pwm_value)
-    except Exception as e:
-        print(f"Lỗi thiết lập PWM: {e}")
-def uart_init(tx=14, rx=15, baud=9600):
-    """
-    - tx: Chân GPIO TX (mặc định GPIO 14).
-    - rx: Chân GPIO RX (mặc định GPIO 15).
-    """
-    try:
-        pi.set_mode(tx, pigpio.ALT5)
-        pi.set_mode(rx, pigpio.ALT5)
-        uart_handle = pi.serial_open("/dev/serial0", baud)
-        return uart_handle
-    except Exception as e:
-        print(f"Lỗi mở UART: {e}")
-        return None
-    
-def uart_send(handle, data):
-    if handle is None:
-        print("UART chưa được khởi tạo!")
-        return
-    try:
-        pi.serial_write(handle, data.encode())
-        print(f"Đã gửi: {data}")
-    except Exception as e:
-        print(f"Lỗi gửi UART: {e}")
+class DeviceController:
+    def __init__(self, mapping_path="./src/device_controller/devices_mapping.json"):
+        self.pi = pigpio.pi()
+        if not self.pi.connected:
+            raise RuntimeError("Không thể kết nối với pigpio daemon!")
 
-def uart_receive(handle):
-    if handle is None:
-        print("UART chưa được khởi tạo!")
+        with open(mapping_path, "r", encoding="utf-8") as file:
+            self.mapping = json.load(file)
+        self.uart_handle = None
+        self._uart_buffer = ""
+    def turn_on_device(self, device):
+        try:
+            self.pi.set_mode(self.mapping[device], pigpio.OUTPUT)
+            self.pi.write(self.mapping[device], 1)
+        except Exception as e:
+            print(f"Lỗi bật thiết bị {device}: {e}")
+
+    def turn_off_device(self, device):
+        try:
+            self.pi.set_mode(self.mapping[device], pigpio.OUTPUT)
+            self.pi.write(self.mapping[device], 0)
+        except Exception as e:
+            print(f"Lỗi tắt thiết bị {device}: {e}")
+
+    def set_pwm(self, device, duty_cycle, frequency):
+        duty_cycle = max(0, min(100, duty_cycle))  # Giới hạn từ 0 đến 100
+        try:
+            self.pi.set_mode(device, pigpio.OUTPUT)
+            self.pi.set_PWM_frequency(device, frequency)
+            pwm_range = min(1_000_000 // frequency, 10_000)
+            self.pi.set_PWM_range(device, pwm_range)
+            pwm_value = int((duty_cycle / 100) * pwm_range)
+            self.pi.set_PWM_dutycycle(device, pwm_value)
+        except Exception as e:
+            print(f"Lỗi thiết lập PWM: {e}")
+
+    def uart_init(self, tx=14, rx=15, baud=9600):
+        try:
+            self.pi.set_mode(tx, pigpio.ALT5)
+            self.pi.set_mode(rx, pigpio.ALT5)
+            self.uart_handle = self.pi.serial_open("/dev/serial0", baud)
+            return self.uart_handle
+        except Exception as e:
+            print(f"Lỗi mở UART: {e}")
+            return None
+
+    def uart_send(self, data):
+        if self.uart_handle is None:
+            print("UART chưa được khởi tạo!")
+            return
+        try:
+            data = data.strip() + "\n"
+            self.pi.serial_write(self.uart_handle, data.encode())
+            print(f"Đã gửi: {data}")
+        except Exception as e:
+            print(f"Lỗi gửi UART: {e}")
+
+    def uart_receive(self):
+        if self.uart_handle is None:
+            print("UART chưa được khởi tạo!")
+            return None
+        try:
+            count, data = self.pi.serial_read(self.uart_handle)
+            if count > 0:
+                try:
+                    decoded = data.decode('utf-8')
+                except UnicodeDecodeError:
+                    decoded = data.decode('utf-8', errors='ignore')
+
+                self._uart_buffer += decoded
+
+                if '\n' in self._uart_buffer:
+                    lines = self._uart_buffer.split('\n')
+                    complete_line = lines[0].strip()
+                    self._uart_buffer = '\n'.join(lines[1:])
+                    print(f"{complete_line}")
+                    return complete_line
+        except Exception as e:
+            print(f"Lỗi đọc UART: {e}")
         return None
-    try:
-        count, data = pi.serial_read(handle)
-        if count > 0:
-            received_data = data.decode()
-            print(f"Nhận được: {received_data}")
-            return received_data
-    except Exception as e:
-        print(f"Lỗi nhận UART: {e}")
-    return None
-def uart_close(handle):
-    if handle is not None:
-        pi.serial_close(handle)
-        print("UART đã đóng.")
-        
+
+    def uart_close(self):
+        if self.uart_handle is not None:
+            self.pi.serial_close(self.uart_handle)
+            print("UART đã đóng.")
+dc=DeviceController()
+try:
+    dc.uart_init(baud=115200)
+except:
+    print("ERROR OPEN UART")
+def gpio_controller():
+    return dc

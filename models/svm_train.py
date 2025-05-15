@@ -8,7 +8,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, classification_report
 from joblib import parallel_backend
 # 1️⃣ Tải dữ liệu huấn luyện (Giả sử file JSON chứa danh sách các câu lệnh)
-with open(r"C:\Users\MY PC\Desktop\DATN\dataset\intern_training_data.json", "r", encoding="utf-8") as f:
+with open(r"C:\Users\MY PC\Desktop\DATN\DATN\dataset\nlu_datasets\intern_training_data.json", "r", encoding="utf-8") as f:
     training_data = json.load(f)
 
 # 2️⃣ Trích xuất văn bản và nhãn
